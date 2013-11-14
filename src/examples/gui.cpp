@@ -29,15 +29,16 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glfw.h>
-
+#include <GL/glut.h>
 #include <cflie/CCrazyflie.h>
+#include <ncurses.h>
 
 using namespace std;
 
 
 bool g_bGoon;
 
-void print(int, int, char *);
+void printGL(int, int, int, char *);
 
 void drawGL(float fX, float fY, float fZ) {
   glLoadIdentity();
@@ -71,19 +72,20 @@ void drawGL(float fX, float fY, float fZ) {
 
 int main(int argc, char **argv) {
   CCrazyRadio *crRadio = new CCrazyRadio("radio://0/10/250K");
+  char pstring[20];
   
   if(crRadio->startRadio()) {
     CCrazyflie *cflieCopter = new CCrazyflie(crRadio);
     cflieCopter->setSendSetpoints(true);
     cflieCopter->setThrust(0);
-    
+
     if(glfwInit() == GL_TRUE) {
       g_bGoon = true;
       
       int nWidth = 800, nHeight = 600;
       int nBitsPerComponent = 8, nDepthBits = 0, nStencilBits = 0;
       int nOpenGLMode = GLFW_WINDOW;
-      
+
       if(glfwOpenWindow(nWidth, nHeight,
 			nBitsPerComponent, nBitsPerComponent, nBitsPerComponent, nBitsPerComponent, nDepthBits, nStencilBits, nOpenGLMode)) {
 	glMatrixMode(GL_PROJECTION);
@@ -92,11 +94,22 @@ int main(int argc, char **argv) {
 	glFrustum(.5, -.5, -.5 * fAspectRatio, .5 * fAspectRatio, 1, 50);
 	glMatrixMode(GL_MODELVIEW);
 	
-	cout << "Running, exit with 'ESC'." << endl;
+	//	cout << "Running, exit with 'ESC'." << endl;
+	// init console screen
+	for(int i=0; i < 10; i++)
+	  cflieCopter->cycle();
+	cflieCopter->setThrust(30000);
+	sleep(3);
+	WINDOW *win;
+	win = initscr();
 	while(g_bGoon) {
 	  // Print data
-	  print(10, 10, cflieCopter->accx());
-	  
+	  //	  printGL(100, 100, 100, "test");
+	  mvprintw(50, 5, "accx: %f accy: %f accz: %f", cflieCopter->accX(), cflieCopter->accY(), cflieCopter->accZ());
+	  mvprintw(51, 5, "gyrox: %f gyroy: %f gyroz: %f", cflieCopter->gyroX(), cflieCopter->gyroY(), cflieCopter->gyroZ());
+	  mvprintw(52, 5, "barometer pressure:%f temp: %f asl: %f", cflieCopter->pressure(), cflieCopter->temperature(), cflieCopter->asl());
+	  mvprintw(52, 5, "Quad thrust:%f roll:%f pitch: %f yaw:%f", cflieCopter->thrust(), cflieCopter->roll(), cflieCopter->pitch(), cflieCopter->yaw());
+
 	  if(cflieCopter->cycle()) {
 	    drawGL(cflieCopter->roll(),
 		   cflieCopter->pitch(),
@@ -105,6 +118,7 @@ int main(int argc, char **argv) {
 	    if(glfwGetKey(GLFW_KEY_ESC) == GLFW_PRESS) {
 	      cflieCopter->setThrust(0);
 	      g_bGoon = false;
+	      //	      endwin();
 	    } else {
 	      if(glfwGetKey(GLFW_KEY_SPACE) == GLFW_PRESS) {
 		cflieCopter->setThrust(45000);
@@ -154,7 +168,7 @@ int main(int argc, char **argv) {
 }
 
 
-void print(int x, int y,int z, char *string) {
+void printGL(int x, int y,int z, char *string) {
   //set the position of the text in the window using the x and y coordinates
   glRasterPos2f(x,y);
   //get the length of the string to display
@@ -163,6 +177,6 @@ void print(int x, int y,int z, char *string) {
   //loop to display character by character
   for (int i = 0; i < len; i++) 
     {
-      glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,str ing[i]);
+      glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,string[i]);
     }
 };

@@ -24,7 +24,7 @@ add_executable(ex-gui src/examples/gui.cpp)
 target_link_libraries(${PROJECT_NAME} ${USB_LIB})
 target_link_libraries(ex-replugging ${PROJECT_NAME})
 target_link_libraries(ex-simple ${PROJECT_NAME})
-target_link_libraries(ex-gui ${PROJECT_NAME} glfw GL GLU)
+target_link_libraries(ex-gui ${PROJECT_NAME} glfw GL GLU glut ncurses)
 
 install(FILES include/cflie/*.h DESTINATION include)
 install(FILES lib/* DESTINATION lib)

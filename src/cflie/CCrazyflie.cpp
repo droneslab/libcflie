@@ -398,7 +398,6 @@ float CCrazyflie::temperature() {
   return this->sensorDoubleValue("alti.temperature");
 }
 
-
 void CCrazyflie::disableAltimeterLogging() {
   m_tocLogs->unregisterLoggingBlock("altimeter");
 }
