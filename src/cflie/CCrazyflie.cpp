@@ -224,6 +224,7 @@ void CCrazyflie::setYaw(float fYaw) {
   }
 }
 
+
 float CCrazyflie::yaw() {
   return this->sensorDoubleValue("stabilizer.yaw");
 }
@@ -300,11 +301,11 @@ float CCrazyflie::gyroX() {
 }
 
 float CCrazyflie::gyroY() {
-  return this->sensorDoubleValue("gyro.x");
+  return this->sensorDoubleValue("gyro.y");
 }
 
 float CCrazyflie::gyroZ() {
-  return this->sensorDoubleValue("gyro.x");
+  return this->sensorDoubleValue("gyro.z");
 }
 
 void CCrazyflie::enableAccelerometerLogging() {

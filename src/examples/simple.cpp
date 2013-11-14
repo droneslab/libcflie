@@ -28,6 +28,7 @@
 #include <iostream>
 
 #include <cflie/CCrazyflie.h>
+#include <ncurses.h>
 
 using namespace std;
 
@@ -70,10 +71,14 @@ int main(int argc, char **argv) {
       
       // Other than that, this example covers pretty much everything
       // basic you will need for controlling the copter.
+      cflieCopter->setRoll(0);
+      cflieCopter->setPitch(0);
+      cflieCopter->setYaw(0);
     }
     
     delete cflieCopter;
-  } else {
+  } 
+  else {
     cerr << "Could not connect to dongle. Did you plug it in?" << endl;
   }
   
