@@ -32,6 +32,7 @@
 #include <GL/glut.h>
 #include <cflie/CCrazyflie.h>
 #include <ncurses.h>
+#include <GL/glut.h>
 
 using namespace std;
 
@@ -110,7 +111,11 @@ int main(int argc, char **argv) {
 	f=fopen("log.txt","w+");
 	while(g_bGoon) {
 	  // Print data
-	  //	  printGL(100, 100, 100, "test");
+	  initscr();
+	  mvprintw(5, 5, "accx: %f accy: %f accz: %f", cflieCopter->accX(), cflieCopter->accY(), cflieCopter->accZ());
+	  refresh();
+	  getch();
+	  endwin();
 	  if(cflieCopter->cycle()) {
 	    drawGL(cflieCopter->roll(),
 		   cflieCopter->pitch(),

@@ -371,7 +371,15 @@ void CCrazyflie::enableMagnetometerLogging() {
   m_tocLogs->startLogging("mag.y", "magnetometer");
   m_tocLogs->startLogging("mag.z", "magnetometer");
 }
-
+float CCrazyflie::magX() {
+  return this->sensorDoubleValue("mag.x");
+}
+float CCrazyflie::magY() {
+  return this->sensorDoubleValue("mag.y");
+}
+float CCrazyflie::magZ() {
+  return this->sensorDoubleValue("mag.z");
+}
 void CCrazyflie::disableMagnetometerLogging() {
   m_tocLogs->unregisterLoggingBlock("magnetometer");
 }

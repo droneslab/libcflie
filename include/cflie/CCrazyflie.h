@@ -291,6 +291,9 @@ class CCrazyflie {
   float gyroY();
   float gyroZ();
   float batteryState();
+  float magX();
+  float magY();
+  float magZ();
 
 };
 
