@@ -31,6 +31,8 @@
 #include <GL/glfw.h>
 
 #include <cflie/CCrazyflie.h>
+#include <ncurses.h>
+#include <GL/glut.h>
 
 using namespace std;
 
@@ -95,8 +97,11 @@ int main(int argc, char **argv) {
 	cout << "Running, exit with 'ESC'." << endl;
 	while(g_bGoon) {
 	  // Print data
-	  print(10, 10, cflieCopter->accx());
-	  
+	  initscr();
+	  mvprintw(5, 5, "accx: %f accy: %f accz: %f", cflieCopter->accX(), cflieCopter->accY(), cflieCopter->accZ());
+	  refresh();
+	  getch();
+	  endwin();
 	  if(cflieCopter->cycle()) {
 	    drawGL(cflieCopter->roll(),
 		   cflieCopter->pitch(),
