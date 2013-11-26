@@ -91,6 +91,8 @@ int main(int argc, char **argv) {
       double gyroY1=0.0, gyroY2=0.0, dRoll=0.0, kp_roll=1.0;
       double gyroZ1=0.0, gyroZ2=0.0, dYaw=0.0, kp_yaw=1.0;
       double accZ1=0.0, accZ2=0.0, dThrust=0.0, kp_thrust=-500000000.0;
+      double gyroX0=0.0, gyroY0=0.0, gyroZ0=0.0, accZ0=0.0;
+      bool start=true;
 
       if(glfwOpenWindow(nWidth, nHeight,
 			nBitsPerComponent, nBitsPerComponent, nBitsPerComponent, nBitsPerComponent, nDepthBits, nStencilBits, nOpenGLMode)) {
@@ -104,11 +106,13 @@ int main(int argc, char **argv) {
 	// init console screen
 	for(int i=0; i < 6; i++)
 	  cflieCopter->cycle();
+
 	cflieCopter->setThrust(30000);
 	//	sleep(3);
 	WINDOW *win;
 	win = initscr();
 	f=fopen("log.txt","w+");
+
 	while(g_bGoon) {
 	  // Print data
 	  initscr();
@@ -123,21 +127,29 @@ int main(int argc, char **argv) {
 
 	      accZ2 = accZ1;
 	      accZ1 = cflieCopter->accZ();
-	      dThrust =  kp_thrust * (accZ1 - accZ2);
+	      dThrust =  kp_thrust * (accZ1 - accZ0);
 
 	      gyroX2 = gyroX1;
 	      gyroX1 = cflieCopter->gyroX();
-	      dPitch = kp_pitch * (gyroX1 - gyroX2);
+	      dPitch = kp_pitch * (gyroX1 - gyroX0);
 
 	      gyroY2 = gyroY1;
 	      gyroY1 = cflieCopter->gyroY();
-	      dRoll = kp_roll * (gyroY1 - gyroY2);
+	      dRoll = kp_roll * (gyroY1 - gyroY0);
 
 	      gyroZ2 = gyroZ1;
 	      gyroZ1 = cflieCopter->gyroZ();
-	      dYaw = kp_yaw * (gyroZ1 - gyroZ2);
+	      dYaw = kp_yaw * (gyroZ1 - gyroZ0);
 	      
-	      fprintf(f, "%f %f %f %f %f %f %f %f %f %f %f %d\n", (gyroX1 - gyroX2), dPitch, cflieCopter->pitch(), (gyroY1 - gyroY2), dRoll, cflieCopter->roll(),(gyroZ1 - gyroZ2), dYaw, cflieCopter->yaw(), (accZ1 - accZ2), dThrust, cflieCopter->thrust()); 
+	      if(start) {
+		gyroX0 = gyroX2;
+		gyroY0 = gyroY2;
+		gyroZ0 = gyroZ2;
+		accZ0 = accZ2;
+		start = false;
+	      }
+	      
+	      fprintf(f, "%f %f %f %f %f %f %f %f %f %f %f %d\n", (gyroX1 - gyroX0), dPitch, cflieCopter->pitch(), (gyroY1 - gyroY0), dRoll, cflieCopter->roll(),(gyroZ1 - gyroZ0), dYaw, cflieCopter->yaw(), (accZ1 - accZ0), dThrust, cflieCopter->thrust()); 
 	      
 	    mvprintw(50, 5, "accx: %f accy: %f accz: %f", cflieCopter->accX() *100, cflieCopter->accY() *100, cflieCopter->accZ()*100);
 	    mvprintw(51, 5, "gyrox: %f gyroy: %f gyroz: %f", cflieCopter->gyroX(), cflieCopter->gyroY(), cflieCopter->gyroZ());
@@ -145,14 +157,14 @@ int main(int argc, char **argv) {
 	    mvprintw(52, 5, "Quad thrust: %f roll: %f pitch: %f yaw: %f ", cflieCopter->thrust(), cflieCopter->roll(), cflieCopter->pitch(), cflieCopter->yaw());
 	    mvprintw(53, 5, "Yaw: %f", cflieCopter->yaw());
 	    mvprintw(54, 5, "PID Control: %d", pidControl);
-	    mvprintw(55, 5, "Thrust: %f %f %d", (accZ1 - accZ2), dThrust, cflieCopter->thrust());
-	    mvprintw(56, 5, "Pitch : %f %f %f", (gyroX1 - gyroX2), dPitch, cflieCopter->pitch());
-	    mvprintw(57, 5, "Roll  : %f %f %f", (gyroY1 - gyroY2), dRoll, cflieCopter->roll());
-	    mvprintw(58, 5, "Yaw   : %f %f %f", (gyroZ1 - gyroZ2), dYaw, cflieCopter->yaw());
+	    mvprintw(55, 5, "Thrust: %f %f %d", (accZ1 - accZ0), dThrust, cflieCopter->thrust());
+	    mvprintw(56, 5, "Pitch : %f %f %f", (gyroX1 - gyroX0), dPitch, cflieCopter->pitch());
+	    mvprintw(57, 5, "Roll  : %f %f %f", (gyroY1 - gyroY0), dRoll, cflieCopter->roll());
+	    mvprintw(58, 5, "Yaw   : %f %f %f", (gyroZ1 - gyroZ0), dYaw, cflieCopter->yaw());
 	    refresh();
 
 	    if(pidControl) {
-	      cflieCopter->setThrust(dThrust);
+	      //	      cflieCopter->setThrust(dThrust);
 	      cflieCopter->setPitch(dPitch);
 	      cflieCopter->setRoll(dRoll);
 	      cflieCopter->setYaw(dYaw);
